@@ -19,6 +19,7 @@ int main (int argc, const char *argv[]) {
     }
   }
   srand(s);
+  printf("%d\n",n);
   for (int i=0; i<n; ++i) {
     printf("%d\n",rand());
   }

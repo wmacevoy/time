@@ -1,0 +1,25 @@
+#!/bin/bash
+
+echo "n,cycles,page_faults,context_switches"
+for k in $(seq 1 6)
+do
+  n=$(($k*1024))
+  min_cycles=undefined
+  for c in $(seq 1 8)
+  do
+    eval $(LC_NUMERIC=en_US.UTF8 perf stat -x "," -e cycles,page-faults,context-switches nice -20 ./faulty $n 2>&1 >/dev/null | sed 's/\([0-9]*\),,\(cycles\|page\|context\).*/\2=\1/;t;d')
+    if [ "$min_cycles" = "undefined" ]
+    then
+        min_cycles=$cycles
+	min_page=$page
+	min_context=$context
+    elif [ "$cycles" -lt "$min_cycles" ]
+    then
+        min_cycles=$cycles
+	min_page=$page
+	min_context=$context
+    fi
+  done
+  echo "$n,$min_cycles,$min_page,$min_context"
+done
+
